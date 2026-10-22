@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- CA1515 pede tipos internal em apps; aqui os tipos públicos são consumidos pelos projetos de teste. -->
+    <NoWarn>$(NoWarn);CA1515;CA1848;CA1873</NoWarn>
+  </PropertyGroup>
+</Project>

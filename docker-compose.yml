@@ -1,0 +1,74 @@
+# Ambiente local completo, sem conta no Azure: emuladores oficiais do Cosmos DB e do Service Bus.
+#   docker compose up --build
+# Credenciais abaixo são as chaves públicas e fixas dos emuladores, não segredos.
+
+x-cosmos: &cosmos-env
+  Cosmos__ConnectionString: "AccountEndpoint=http://cosmos:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;"
+  Cosmos__UseGatewayMode: "true"
+  Cosmos__CreateIfNotExists: "true"
+  ServiceBus__ConnectionString: "Endpoint=sb://servicebus;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=SAS_KEY_VALUE;UseDevelopmentEmulator=true;"
+
+services:
+  orders-api:
+    build:
+      context: .
+      args:
+        PROJECT: Orders.Api
+    environment:
+      <<: *cosmos-env
+      Auth__ApiKey: ${ORDERS_API_KEY:-local-dev-api-key-change-me}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - cosmos
+      - servicebus
+
+  orders-worker:
+    build:
+      context: .
+      args:
+        PROJECT: Orders.Worker
+    environment:
+      <<: *cosmos-env
+      Inventory__Url: "http://inventory:8080"
+    depends_on:
+      - cosmos
+      - servicebus
+      - inventory
+
+  inventory:
+    build:
+      context: .
+      args:
+        PROJECT: Inventory.Grpc
+    environment:
+      # gRPC sem TLS dentro da rede do compose: HTTP/2 em texto puro.
+      Kestrel__EndpointDefaults__Protocols: Http2
+
+  cosmos:
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:vnext-preview
+    environment:
+      PROTOCOL: http
+      ENABLE_EXPLORER: "true"
+    ports:
+      - "8081:8081"
+      - "1234:1234"
+
+  servicebus:
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    volumes:
+      - ./deploy/servicebus/config.json:/ServiceBus_Emulator/ConfigFiles/Config.json
+    environment:
+      SQL_SERVER: sqlserver
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Local_Emulator_Pass_123}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "5672:5672"
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Local_Emulator_Pass_123}
+      ACCEPT_EULA: "Y"

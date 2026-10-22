@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet restore OrderProcessing.slnx
+      - run: dotnet build OrderProcessing.slnx --no-restore -c Release
+      - run: dotnet test OrderProcessing.slnx --no-build -c Release --logger "trx" --collect:"XPlat Code Coverage"
+
+  images:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose build orders-api orders-worker inventory

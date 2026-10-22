@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Inventory.Grpc/Inventory.Grpc.csproj" />
+    <Project Path="src/Orders.Api/Orders.Api.csproj" />
+    <Project Path="src/Orders.Domain/Orders.Domain.csproj" />
+    <Project Path="src/Orders.Infrastructure/Orders.Infrastructure.csproj" />
+    <Project Path="src/Orders.Worker/Orders.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Inventory.Grpc.Tests/Inventory.Grpc.Tests.csproj" />
+    <Project Path="tests/Orders.Api.Tests/Orders.Api.Tests.csproj" />
+    <Project Path="tests/Orders.Domain.Tests/Orders.Domain.Tests.csproj" />
+    <Project Path="tests/Orders.Worker.Tests/Orders.Worker.Tests.csproj" />
+  </Folder>
+</Solution>

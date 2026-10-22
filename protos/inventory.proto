@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option csharp_namespace = "Inventory.Contracts";
+
+package inventory.v1;
+
+// Reserva de estoque chamada pelo Orders.Worker para cada pedido novo.
+service Inventory {
+  // Reserva todas as linhas ou nenhuma. Idempotente por order_id: repetir a chamada
+  // devolve o mesmo resultado sem reservar de novo.
+  rpc ReserveStock (ReserveStockRequest) returns (ReserveStockReply);
+
+  rpc GetStock (GetStockRequest) returns (GetStockReply);
+}
+
+message StockLine {
+  string sku = 1;
+  int32 quantity = 2;
+}
+
+message ReserveStockRequest {
+  string order_id = 1;
+  repeated StockLine lines = 2;
+}
+
+message ReserveStockReply {
+  bool reserved = 1;
+  // Preenchido quando reserved = false.
+  string reason = 2;
+}
+
+message GetStockRequest {
+  string sku = 1;
+}
+
+message GetStockReply {
+  string sku = 1;
+  int32 available = 2;
+}
