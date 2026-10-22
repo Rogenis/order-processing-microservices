@@ -1,5 +1,7 @@
 # Order Processing Microservices
 
+[![CI](https://github.com/Rogenis/order-processing-microservices/actions/workflows/ci.yml/badge.svg)](https://github.com/Rogenis/order-processing-microservices/actions/workflows/ci.yml)
+
 Event-driven order processing on **.NET 10**, **Azure Cosmos DB**, **Azure Service Bus** and **gRPC**, with idempotent APIs, at-least-once messaging and failure handling verified end to end.
 
 The whole system runs locally with one command, using the official Azure emulators. No Azure account needed.
